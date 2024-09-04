@@ -122,10 +122,29 @@ function pur_add_plugin_settings_page() {
 }
 add_action('admin_menu', 'pur_add_plugin_settings_page');
 
+// Check IP while login
+function pur_restrict_login_by_ip($user, $password) {
+    // Verify if the user role is 'plugin_updater'
+    if (in_array('plugin_updater', (array) $user->roles)) {
+        $enable_ip_restriction = get_option('pur_enable_ip_restriction', 0);
+        $allowed_ip = get_option('pur_ip_address', '');
+
+        if ($enable_ip_restriction) {
+            $user_ip = $_SERVER['REMOTE_ADDR'];
+
+            if ($user_ip !== $allowed_ip) {
+                return new WP_Error('authentication_failed', __('Your IP address is not allowed to login.'));
+            }
+        }
+    }
+
+    return $user;
+}
+add_filter('wp_authenticate_user', 'pur_restrict_login_by_ip', 10, 2);
+
 /* TODO:
         - Block actions in bulk from serverside.
         - Test activation/deactivation of plugins externally.        
-        - Block login from a different IP to be added.
 */
 
 ?>
