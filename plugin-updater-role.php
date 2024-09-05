@@ -38,6 +38,8 @@ function pur_restrict_admin_access() {
         $allowed_pages = [
             'plugins.php',
             'update.php',
+            'update-core.php', 
+            'plugin-install.php',
         ];
 
         $current_page = basename($_SERVER['PHP_SELF']);
