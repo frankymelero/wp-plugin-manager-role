@@ -30,7 +30,8 @@ function pur_create_plugin_manager_role()
 add_action('init', 'pur_create_plugin_manager_role');
 
 // Restricts access.
-function pur_restrict_admin_access() {
+function pur_restrict_admin_access()
+{
     $user = wp_get_current_user();
 
     if (in_array('plugin_updater', (array) $user->roles)) {
@@ -38,7 +39,7 @@ function pur_restrict_admin_access() {
         $allowed_pages = [
             'plugins.php',
             'update.php',
-            'update-core.php', 
+            'update-core.php',
             'plugin-install.php',
         ];
 
@@ -148,7 +149,4 @@ function pur_block_bulk_actions($actions)
 
 add_filter('bulk_actions-plugins', 'pur_block_bulk_actions');
 
-
-/* TODO:
-        - Test activation/deactivation of plugins externally.        
-*/
+?>
