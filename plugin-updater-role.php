@@ -2,15 +2,16 @@
 /*
 Plugin Name: Plugin Updater Role
 Plugin URI:  https://github.com/frankymelero/wp-plugin-updater-role
-Description: This plugin adds the "Plugin Updater" role which allows only to list and update plugins. Additionally ads a setting to allow access to only certain IPs to login as a "Plugin Updater".
+Description: This plugin adds the "Plugin Updater" role wich allows the user to only list and update plugins. Additionaly the admin can set up an IP restriction for users with this role.
 Version:     0.2
 Author:      Franky Melero
 Author URI:  https://github.com/frankymelero
 License:     GPL2
 */
 
-// Create a custom role.
-function pur_create_plugin_manager_role() {
+// Creates a custom role.
+function pur_create_plugin_manager_role()
+{
     remove_role('plugin_updater');
 
     add_role(
@@ -19,7 +20,7 @@ function pur_create_plugin_manager_role() {
         array(
             'read' => true,
             'update_plugins' => true,
-            'activate_plugins' => true,  
+            'activate_plugins' => true,
             'install_plugins' => false,
             'delete_plugins' => false,
             'edit_plugins' => false,
@@ -28,8 +29,9 @@ function pur_create_plugin_manager_role() {
 }
 add_action('init', 'pur_create_plugin_manager_role');
 
-// Restrict access to certain admin pages.
-function pur_restrict_admin_access() {
+// Restricts access.
+function pur_restrict_admin_access()
+{
     $user = wp_get_current_user();
 
     if (in_array('plugin_updater', (array) $user->roles)) {
@@ -52,8 +54,9 @@ function pur_restrict_admin_access() {
 }
 add_action('admin_init', 'pur_restrict_admin_access');
 
-// Remove activation/deactivation links from the plugins list.
-function pur_remove_activation_links($actions, $plugin_file, $plugin_data, $context) {
+// Removes activation/deactivation links from the plugins list.
+function pur_remove_activation_links($actions, $plugin_file, $plugin_data, $context)
+{
     $user = wp_get_current_user();
 
     if (in_array('plugin_updater', (array) $user->roles)) {
@@ -63,15 +66,15 @@ function pur_remove_activation_links($actions, $plugin_file, $plugin_data, $cont
         if (isset($actions['deactivate'])) {
             unset($actions['deactivate']);
         }
-       
     }
 
     return $actions;
 }
 add_filter('plugin_action_links', 'pur_remove_activation_links', 10, 4);
 
-// Block plugin activation/deactivation through direct actions
-function pur_block_plugin_activation() {
+// Blocks plugin activation/deactivation through direct actions
+function pur_block_plugin_activation()
+{
     $user = wp_get_current_user();
 
     if (in_array('plugin_updater', (array) $user->roles)) {
@@ -82,49 +85,37 @@ function pur_block_plugin_activation() {
 }
 add_action('admin_init', 'pur_block_plugin_activation');
 
-// Hide via CSS bulk actions. 
-
-function pur_hide_elements_css() {
-    if (current_user_can('plugin_updater')) {
-        echo '<style>
-            select[name="action"],
-            select[name="action2"],
-            .tablenav.top .actions,
-            #doaction2 {
-                display: none !important;
-            }
-        </style>';
-    }
-}
-add_action('admin_head', 'pur_hide_elements_css');
-
-function pur_add_settings_link($links) {
-    if (current_user_can('manage_options')) { 
+// Adds a link in the plugin page
+function pur_add_settings_link($links)
+{
+    if (current_user_can('manage_options')) {
         $settings_link = '<a href="' . esc_url(admin_url('admin.php?page=pur-settings')) . '">Settings</a>';
         array_push($links, $settings_link);
     }
     return $links;
 }
-
 add_filter('plugin_action_links_' . plugin_basename(__FILE__), 'pur_add_settings_link');
 
 require_once plugin_dir_path(__FILE__) . 'includes/pur-settings.php';
 
-function pur_add_plugin_settings_page() {
+// Adds a submenu  Plugins menu,
+function pur_add_plugin_settings_page()
+{
     add_submenu_page(
-        'plugins.php',               
+        'plugins.php',
         'Plugin Updater Role Settings',
-        'Plugin Updater Role Settings', 
-        'manage_options', 
-        'pur-settings', 
-        'pur_display_ip_settings'  
+        'Plugin Updater Role Settings',
+        'manage_options',
+        'pur-settings',
+        'pur_display_ip_settings'
     );
 }
 add_action('admin_menu', 'pur_add_plugin_settings_page');
 
-// Check IP while login
-function pur_restrict_login_by_ip($user, $password) {
-    // Verify if the user role is 'plugin_updater'
+//Restricts login to the accounts with Plugin Updater role by IP if configured.
+function pur_restrict_login_by_ip($user, $password)
+{
+
     if (in_array('plugin_updater', (array) $user->roles)) {
         $enable_ip_restriction = get_option('pur_enable_ip_restriction', 0);
         $allowed_ip = get_option('pur_ip_address', '');
@@ -142,9 +133,24 @@ function pur_restrict_login_by_ip($user, $password) {
 }
 add_filter('wp_authenticate_user', 'pur_restrict_login_by_ip', 10, 2);
 
+// Blocks Bulk actions for Plugin Updater role.
+function pur_block_bulk_actions($actions)
+{
+
+    $user = wp_get_current_user();
+
+    $blocked_role = 'plugin_updater';
+
+    if (in_array($blocked_role, $user->roles)) {
+        return array();
+    }
+
+    return $actions;
+}
+
+add_filter('bulk_actions-plugins', 'pur_block_bulk_actions');
+
+
 /* TODO:
-        - Block actions in bulk from serverside.
         - Test activation/deactivation of plugins externally.        
 */
-
-?>
