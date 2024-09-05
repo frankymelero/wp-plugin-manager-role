@@ -30,24 +30,20 @@ function pur_create_plugin_manager_role()
 add_action('init', 'pur_create_plugin_manager_role');
 
 // Restricts access.
-function pur_restrict_admin_access()
-{
+function pur_restrict_admin_access() {
     $user = wp_get_current_user();
 
     if (in_array('plugin_updater', (array) $user->roles)) {
-        $restricted_pages = [
-            'tools.php',
-            'options-general.php',
-            'options-writing.php',
-            'options-reading.php',
-            'options-discussion.php',
-            'options-media.php',
-            'options-permalink.php'
+
+        $allowed_pages = [
+            'plugins.php',
+            'update.php',
         ];
 
         $current_page = basename($_SERVER['PHP_SELF']);
-        if (in_array($current_page, $restricted_pages)) {
-            wp_redirect(admin_url());
+
+        if (!in_array($current_page, $allowed_pages)) {
+            wp_redirect(admin_url('plugins.php'));
             exit;
         }
     }
