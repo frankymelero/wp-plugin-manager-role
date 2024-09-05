@@ -2,7 +2,7 @@
 
 ## Description
 
-The **Plugin Updater Role Plugin** adds a custom user role named `Plugin Updater` to your WordPress site. This role is designed to allow users to view and manage plugins but restricts access to plugin activation, deactivation, and installation. Additionally, the plugin supports IP-based restrictions to limit access to specific IP addresses for users with this role.
+The **Plugin Updater Role Plugin** adds a custom user role named `Plugin Updater` to your WordPress site. This role is designed to allow browser automation scripts to view and manage plugins but restricts access to plugin activation, deactivation, and installation. Additionally, the plugin supports IP-based restrictions to limit access to specific IP addresses for users with this role.
 
 ## Features
 
@@ -24,13 +24,13 @@ The **Plugin Updater Role Plugin** adds a custom user role named `Plugin Updater
 
 ## Configuration
 
-1. **Configure IP Restrictions** (Optional):
+1. **Configure IP Restrictions** (Recommended):
    - Navigate to `Plugins` > `Plugin Updater Role Settings` to configure IP restrictions.
-   - Enable IP restriction and enter the allowed IP address if required..
+   - Enable IP restriction and enter the allowed IP address.
 
 2. **Assign the Plugin Updater Role**:
    - Go to `Users` in the WordPress admin dashboard.
-   - Edit or create a user and assign them the `Plugin Updater` role.
+   - Edit or create a user and assign the `Plugin Updater` role.
 
 ## Usage
 
